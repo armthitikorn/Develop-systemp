@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนเข้าใช้งานแดชบอร์ด</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h2 {
+            color: #1877f2; /* Facebook Blue */
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: #1877f2;
+            outline: none;
+        }
+        button {
+            background-color: #42b72a; /* Facebook Green */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #36a420;
+        }
+        .note {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>🚀 ลงทะเบียนเข้าใช้งานแดชบอร์ด</h2>
+        
+        <form action="index1.html" method="GET">
+            
+            <div class="form-group">
+                <label for="trainer_name">ชื่อเทรนเนอร์</label>
+                <input type="text" id="trainer_name" name="trainer_name" placeholder="กรอกชื่อ-นามสกุล" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="department">แผนกที่จะทำการเทรน</label>
+                <select id="department" name="department" required>
+                    <option value="">--- เลือกแผนก ---</option>
+                    <option value="Sales">แผนก Sales</option>
+                    <option value="Service">แผนก Service</option>
+                    <option value="Telesales">แผนก Telesales</option>
+                    <option value="Management">แผนก Management</option>
+                    <option value="Other">แผนกอื่นๆ</option>
+                </select>
+            </div>
+            
+            <button type="submit">ลงทะเบียนและเข้าสู่แดชบอร์ด</button>
+        </form>
+        
+        <p class="note">เมื่อกดลงทะเบียน ระบบจะนำคุณไปยังหน้าแดชบอร์ดหลัก</p>
+    </div>
+</body>
+</html>
