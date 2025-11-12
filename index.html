@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ใช้ฟอนต์ Sarabun เพื่อความสม่ำเสมอ */
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
         
         body { 
@@ -22,7 +21,7 @@
         }
         .login-container {
             width: 100%;
-            max-width: 400px; /* กำหนดขนาดฟอร์มล็อกอิน */
+            max-width: 400px;
             padding: 30px;
             background: white;
             border-radius: 12px;
@@ -31,7 +30,7 @@
         }
         h1 { 
             font-size: 28px;
-            color: #1e88e5; /* สีน้ำเงินสำหรับชื่อโครงการ */
+            color: #1e88e5; 
             margin-bottom: 30px;
             font-weight: 700;
         }
@@ -50,13 +49,13 @@
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            box-sizing: border-box; /* ทำให้ Padding ไม่ล้นความกว้าง */
+            box-sizing: border-box;
             font-size: 16px;
         }
         button {
             width: 100%;
             padding: 12px;
-            background-color: #4CAF50; /* สีเขียวสำหรับปุ่มล็อกอิน */
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 8px;
@@ -70,7 +69,7 @@
         }
         #loginMessage {
             margin-top: 20px;
-            color: #d9534f; /* สีแดงสำหรับข้อความแจ้งเตือน */
+            color: #d9534f;
             font-weight: 400;
         }
     </style>
@@ -100,7 +99,7 @@
     const SUPABASE_URL = 'https://wzwyotzzxycqfwercakh.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6d3lvdHp6eHljcWZ3ZXJjYWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTg3MTMsImV4cCI6MjA3MjYzNDcxM30.lgiAf9oBUqsaWGb3u_80wuoKAODQHE_lIBxpGumhrno'; 
     
-    // 1. Initialise Supabase Client
+    // 1. Initialise Supabase Client (Supabase ถูกกำหนดแล้วจาก script tag ด้านบน)
     const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const loginMessageEl = document.getElementById('loginMessage');
@@ -110,7 +109,6 @@
      * 2. ฟังก์ชันสำหรับบันทึกการเข้าใช้งานลงในตาราง access_log
      */
     async function trackUserAccess(userId, userEmail) {
-        // ต้องมั่นใจว่าได้สร้างตาราง 'access_log' ใน Supabase แล้ว
         const { error } = await supabase
             .from('access_log')
             .insert([
@@ -137,34 +135,28 @@
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        // เรียกใช้ Supabase Authentication
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
         });
 
         if (error) {
-            // ล็อกอินล้มเหลว
             loginMessageEl.textContent = `🚫 ล็อกอินไม่สำเร็จ: ${error.message}`;
             console.error('Login Error:', error);
             loginButton.disabled = false;
             return;
         }
 
-        // ล็อกอินสำเร็จ
         loginMessageEl.textContent = `✅ เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ${data.user.email}`;
         
-        // บันทึกสถิติการเข้าใช้งาน
         await trackUserAccess(data.user.id, data.user.email); 
 
-        // 💡 เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด
+        // เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด
         window.location.href = 'dashboard.html'; 
     }
 
-    // ผูก Event Listener กับปุ่ม
     loginButton.addEventListener('click', handleLogin);
     
-    // (Optional) อนุญาตให้กด Enter เพื่อล็อกอิน
     document.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             handleLogin();
