@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Supervisor/Trainer Dashboard | E-Simulator</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
     
     <style>
-        /* สไตล์ที่ใช้ร่วมกับหน้า Login */
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
         
         body { 
@@ -42,7 +41,7 @@
             padding: 0;
         }
         .task-list li {
-            background-color: #e3f2fd; /* สีฟ้าอ่อน */
+            background-color: #e3f2fd;
             margin-bottom: 12px;
             border-radius: 8px;
             overflow: hidden;
@@ -56,7 +55,7 @@
             display: block;
             padding: 15px 20px;
             text-decoration: none;
-            color: #1e88e5; /* สีน้ำเงินเข้ม */
+            color: #1e88e5;
             font-weight: 600;
             font-size: 18px;
             text-align: left;
@@ -66,7 +65,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 30px;
-            background-color: #f44336; /* สีแดง */
+            background-color: #f44336;
             color: white;
             border: none;
             border-radius: 8px;
@@ -74,7 +73,6 @@
             font-size: 16px;
             font-weight: 600;
         }
-        /* Loader/Forbidden */
         #loading, #forbidden {
             text-align: center;
             padding: 50px;
@@ -95,6 +93,11 @@
     
     <ul class="task-list">
          <li>
+            <a href="access_report.html">
+                📋 รายงานสรุปการเข้าใช้งานระบบ
+            </a>
+        </li>
+        <li>
             <a href="data_filter.html">
                 📊 ตรวจสอบและกรองผลการทดสอบ (New Feature)
             </a>
@@ -111,13 +114,12 @@
 </div>
 
 <script>
-    // ⚠️ สำคัญ: ต้องแทนที่ค่าต่อไปนี้ด้วย Project URL และ Anon Key จริงของคุณจาก Supabase
+    // ⚠️ Supabase Config (ใช้ค่าที่คุณให้มา)
     const SUPABASE_URL = 'https://wzwyotzzxycqfwercakh.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6d3lvdHp6eHljcWZ3ZXJjYWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTg3MTMsImV4cCI6MjA3MjYzNDcxM30.lgiAf9oBUqsaWGb3u_80wuoKAODQHE_lIBxpGumhrno'; 
     
-    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabase; 
 
-    // รายการงานที่คุณระบุ (สามารถเพิ่ม/แก้ไขได้ง่ายในอนาคต)
     const taskLinks = [
         { name: "Dashboard-OB_Testing2025", url: "https://shorturl.asia/AiRLd" },
         { name: "Dashboard_E-Roleplay-Assessment2025", url: "https://shorturl.asia/4pUKm" },
@@ -126,53 +128,49 @@
         { name: "E-Simulate", url: "https://shorturl.asia/1v4HN" }
     ];
 
-    /**
-     * 1. ตรวจสอบสถานะการเข้าสู่ระบบ
-     */
-    async function checkAuthAndLoad() {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        document.getElementById('loading').style.display = 'none';
-
-        if (!session) {
-            // ไม่มี Session: ไม่อนุญาตให้เข้าถึง
-            document.getElementById('forbidden').style.display = 'block';
-            return;
-        }
-        
-        // มี Session: โหลดหน้าแดชบอร์ด
-        const user = session.user;
-        const userEmail = user.email || 'ผู้ดูแล';
-
-        document.getElementById('dashboardContent').style.display = 'block';
-        document.getElementById('welcomeMessage').textContent = `ยินดีต้อนรับ, คุณ ${userEmail.split('@')[0]}!`;
-        
-        // สร้างรายการลิงก์
-        renderTaskList();
-    }
-
-    /**
-     * 2. สร้างรายการลิงก์จาก Array
-     */
     function renderTaskList() {
         const taskListEl = document.getElementById('taskList');
-        taskListEl.innerHTML = ''; // ล้างรายการเดิม
+        taskListEl.innerHTML = ''; 
         
         taskLinks.forEach(task => {
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.href = task.url;
             a.textContent = `🔗 ${task.name}`;
-            a.target = "_blank"; // เปิดหน้าใหม่
+            a.target = "_blank";
             li.appendChild(a);
             taskListEl.appendChild(li);
         });
     }
 
-    /**
-     * 3. ฟังก์ชันออกจากระบบ
-     */
+    async function checkAuthAndLoad() {
+        if (!supabase) {
+             document.getElementById('loading').style.display = 'none';
+             document.getElementById('forbidden').innerHTML = "🚫 **Supabase Client ไม่พร้อมใช้งาน** กรุณาตรวจสอบไฟล์ 'supabase.js'";
+             document.getElementById('forbidden').style.display = 'block';
+             return;
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        document.getElementById('loading').style.display = 'none';
+
+        if (!session) {
+            document.getElementById('forbidden').style.display = 'block';
+            return;
+        }
+        
+        const userEmail = session.user.email || 'ผู้ดูแล';
+
+        document.getElementById('dashboardContent').style.display = 'block';
+        document.getElementById('welcomeMessage').textContent = `ยินดีต้อนรับ, คุณ ${userEmail.split('@')[0]}!`;
+        
+        renderTaskList();
+    }
+
     async function handleLogout() {
+        if (!supabase) return;
+
         const { error } = await supabase.auth.signOut();
         if (!error) {
             window.location.href = 'login.html'; // กลับไปหน้าล็อกอิน
@@ -182,8 +180,17 @@
         }
     }
 
-    // เริ่มต้นการตรวจสอบเมื่อหน้าโหลดเสร็จ
-    document.addEventListener('DOMContentLoaded', checkAuthAndLoad);
+    // 🌟 โครงสร้างที่แก้ไข: เริ่มต้น Supabase Client หลัง DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof Supabase !== 'undefined') {
+             supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+             checkAuthAndLoad(); // เริ่มต้นตรวจสอบสิทธิ์
+        } else {
+             document.getElementById('loading').style.display = 'none';
+             document.getElementById('forbidden').innerHTML = "🚫 **Supabase SDK ไม่สามารถโหลดได้** กรุณาตรวจสอบว่าไฟล์ 'supabase.js' อยู่ในโฟลเดอร์เดียวกันหรือไม่";
+             document.getElementById('forbidden').style.display = 'block';
+        }
+    });
 </script>
 
 </body>
