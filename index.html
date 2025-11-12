@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Dashboard Login | E-Simulator Roleplay</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
@@ -99,17 +99,11 @@
     const SUPABASE_URL = 'https://wzwyotzzxycqfwercakh.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6d3lvdHp6eHljcWZ3ZXJjYWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTg3MTMsImV4cCI6MjA3MjYzNDcxM30.lgiAf9oBUqsaWGb3u_80wuoKAODQHE_lIBxpGumhrno'; 
     
-    // 2. ประกาศตัวแปร Global
     let supabase; 
     let loginButton;
-
     const loginMessageEl = document.getElementById('loginMessage');
 
-    /**
-     * 3. ฟังก์ชันสำหรับบันทึกการเข้าใช้งานลงในตาราง access_log
-     */
     async function trackUserAccess(userId, userEmail) {
-        // ต้องมั่นใจว่า Supabase ถูกกำหนดค่าแล้ว
         if (!supabase) return; 
 
         const { error } = await supabase
@@ -123,9 +117,6 @@
         }
     }
 
-    /**
-     * 4. ฟังก์ชันจัดการการล็อกอิน
-     */
     async function handleLogin() {
         if (!supabase) {
              loginMessageEl.textContent = "🚫 ระบบไม่พร้อมใช้งาน กรุณารีเฟรชหน้าเว็บ";
@@ -153,23 +144,18 @@
         
         await trackUserAccess(data.user.id, data.user.email); 
 
-        // 5. เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด
         window.location.href = 'dashboard.html'; 
     }
 
-    /**
-     * 6. Initialise Supabase และ Event Listeners เมื่อ DOM โหลดเสร็จ (ตัวแก้ปัญหาหลัก)
-     */
+    // 🌟 โครงสร้างที่แก้ไข: เริ่มต้น Supabase Client หลัง DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => {
-        // ตรวจสอบว่า Supabase SDK ถูกโหลดมาหรือไม่ (แก้ปัญหา ReferenceError)
         if (typeof Supabase !== 'undefined') {
              supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } else {
-             loginMessageEl.textContent = "🚫 Supabase SDK ไม่สามารถโหลดได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
+             loginMessageEl.textContent = "🚫 Supabase SDK ไม่สามารถโหลดได้ กรุณาตรวจสอบว่าไฟล์ 'supabase.js' อยู่ในโฟลเดอร์เดียวกันหรือไม่";
              return;
         }
 
-        // กำหนด DOM Elements และ Event Listeners
         loginButton = document.getElementById('loginButton');
         loginButton.addEventListener('click', handleLogin);
         
@@ -179,7 +165,6 @@
             }
         });
     });
-
 </script>
 
 </body>
