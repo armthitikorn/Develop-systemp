@@ -2,20 +2,20 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>ลงทะเบียนเข้าใช้งาน</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>ลงทะเบียนและเลือกเข้าระบบ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.net/npm/@supabase/supabase-js@2</script>
 <style>
 body { background-color: #f8f9fa; }
-.header-logo { max-height: 60px; }
+.header-logo { max-height: 50px; }
 </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-dark bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><img src="logo.png" alt="Logo" class="header-logo"> Training Portal</a>
+    <a class="navbar-brand" href>
   </div>
 </nav>
+
 <div class="container mt-5">
     <h2 class="mb-4 text-center">ลงทะเบียนเพื่อเข้าใช้งาน</h2>
     <form id="registerForm" class="col-6 mx-auto bg-white p-4 rounded shadow">
@@ -36,22 +36,42 @@ body { background-color: #f8f9fa; }
                 <option value="Trainer">Trainer</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary w-100">ลงทะเบียนและไปต่อ</button>
+        <div class="mb-3">
+            <label class="form-label">เลือกระบบ</label>
+            <select class="form-select" id="system" required>
+                <option value="">-- เลือกระบบ --</option>
+                <option value="E-OB_Testing-2025|https://shorturl.asia/Nyxwa">E-OB_Testing-2025</option>
+                <option value="Dashboard-OB_Testing2025|https://shorturl.asia/AiRLd">Dashboard-OB_Testing2025</option>
+                <option value="E-RolePlay-Assessment-plus-2025|https://shorturl.asia/SR8f0">E-RolePlay-Assessment-plus-2025</option>
+                <option value="Dashboard_E-Roleplay-Assessment2025|https://shorturl.asia/4pUKm">Dashboard_E-Roleplay-Assessment2025</option>
+                <option value="E-Testing-Voice|https://shorturl.asia/G926K">E-Testing-Voice</option>
+                <option value="E-Simulate|https://shorturl.asia/1v4HN">E-Simulate</option>
+                <option value="Evaluation_Dashboard|https://shorturl.asia/1LdmB">Evaluation_Dashboard</option>
+                <option value="Voice HD|https://shorturl.asia/V8nDP">Voice HD</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
     </form>
 </div>
+
 <script>
 const supabase = supabase.createClient('https://YOUR_PROJECT_URL.supabase.co', 'YOUR_ANON_KEY');
+
 document.getElementById('registerForm').addEventListener('submit', async function(e){
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const department = document.getElementById('department').value;
-    const { data, error } = await supabase.from('users').insert([{ name, email, department }]);
+    const systemValue = document.getElementById('system').value.split('|');
+    const feature = systemValue[0];
+    const url = systemValue[1];
+
+    // บันทึกลง Supabase
+    const { error } = await supabase.from('usage_stats').insert([{ name, email, department, feature_name: feature }]);
     if(error){
         alert('เกิดข้อผิดพลาด: ' + error.message);
     } else {
-        localStorage.setItem('user', JSON.stringify({ name, email, department }));
-        window.location.href = 'select.html';
+        window.location.href = url;
     }
 });
 </script>
