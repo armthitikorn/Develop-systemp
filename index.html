@@ -95,11 +95,11 @@
 </div>
 
 <script>
-    // ⚠️ สำคัญ: ใช้ค่า Supabase ที่คุณให้มาแล้ว
+    // ⚠️ Supabase Config (ใช้ค่าที่คุณให้มา)
     const SUPABASE_URL = 'https://wzwyotzzxycqfwercakh.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6d3lvdHp6eHljcWZ3ZXJjYWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTg3MTMsImV4cCI6MjA3MjYzNDcxM30.lgiAf9oBUqsaWGb3u_80wuoKAODQHE_lIBxpGumhrno'; 
     
-    // 1. Initialise Supabase Client (Supabase ถูกกำหนดแล้วจาก script tag ด้านบน)
+    // 1. Initialise Supabase Client
     const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const loginMessageEl = document.getElementById('loginMessage');
@@ -112,16 +112,11 @@
         const { error } = await supabase
             .from('access_log')
             .insert([
-                { 
-                    user_id: userId,
-                    user_email: userEmail
-                },
+                { user_id: userId, user_email: userEmail },
             ]);
 
         if (error) {
             console.error("Error logging access:", error);
-        } else {
-            console.log(`Access logged for user: ${userEmail}`);
         }
     }
 
@@ -142,7 +137,6 @@
 
         if (error) {
             loginMessageEl.textContent = `🚫 ล็อกอินไม่สำเร็จ: ${error.message}`;
-            console.error('Login Error:', error);
             loginButton.disabled = false;
             return;
         }
@@ -151,7 +145,7 @@
         
         await trackUserAccess(data.user.id, data.user.email); 
 
-        // เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด
+        // เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด (Dashboard)
         window.location.href = 'dashboard.html'; 
     }
 
