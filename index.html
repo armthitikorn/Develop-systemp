@@ -99,16 +99,19 @@
     const SUPABASE_URL = 'https://wzwyotzzxycqfwercakh.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6d3lvdHp6eHljcWZ3ZXJjYWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNTg3MTMsImV4cCI6MjA3MjYzNDcxM30.lgiAf9oBUqsaWGb3u_80wuoKAODQHE_lIBxpGumhrno'; 
     
-    // 1. Initialise Supabase Client
-    const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // 2. ประกาศตัวแปร Global
+    let supabase; 
+    let loginButton;
 
     const loginMessageEl = document.getElementById('loginMessage');
-    const loginButton = document.getElementById('loginButton');
 
     /**
-     * 2. ฟังก์ชันสำหรับบันทึกการเข้าใช้งานลงในตาราง access_log
+     * 3. ฟังก์ชันสำหรับบันทึกการเข้าใช้งานลงในตาราง access_log
      */
     async function trackUserAccess(userId, userEmail) {
+        // ต้องมั่นใจว่า Supabase ถูกกำหนดค่าแล้ว
+        if (!supabase) return; 
+
         const { error } = await supabase
             .from('access_log')
             .insert([
@@ -121,9 +124,14 @@
     }
 
     /**
-     * 3. ฟังก์ชันจัดการการล็อกอิน
+     * 4. ฟังก์ชันจัดการการล็อกอิน
      */
     async function handleLogin() {
+        if (!supabase) {
+             loginMessageEl.textContent = "🚫 ระบบไม่พร้อมใช้งาน กรุณารีเฟรชหน้าเว็บ";
+             return;
+        }
+
         loginMessageEl.textContent = 'กำลังเข้าสู่ระบบ...';
         loginButton.disabled = true;
 
@@ -145,16 +153,31 @@
         
         await trackUserAccess(data.user.id, data.user.email); 
 
-        // เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด (Dashboard)
+        // 5. เปลี่ยนเส้นทางไปยังหน้าแดชบอร์ด
         window.location.href = 'dashboard.html'; 
     }
 
-    loginButton.addEventListener('click', handleLogin);
-    
-    document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            handleLogin();
+    /**
+     * 6. Initialise Supabase และ Event Listeners เมื่อ DOM โหลดเสร็จ (ตัวแก้ปัญหาหลัก)
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+        // ตรวจสอบว่า Supabase SDK ถูกโหลดมาหรือไม่ (แก้ปัญหา ReferenceError)
+        if (typeof Supabase !== 'undefined') {
+             supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+             loginMessageEl.textContent = "🚫 Supabase SDK ไม่สามารถโหลดได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
+             return;
         }
+
+        // กำหนด DOM Elements และ Event Listeners
+        loginButton = document.getElementById('loginButton');
+        loginButton.addEventListener('click', handleLogin);
+        
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
     });
 
 </script>
